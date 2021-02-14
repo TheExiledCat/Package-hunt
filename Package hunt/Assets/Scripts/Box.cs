@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+[System.Serializable]
 public class Box 
 {
-    
+    [SerializeField]
     string code; //the track id code to search for;
     public Box (string _code)
     {

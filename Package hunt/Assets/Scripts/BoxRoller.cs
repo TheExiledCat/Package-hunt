@@ -1,18 +1,67 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BoxRoller : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    float rollSpeed=1;
+    Dictionary<Box,BoxObject> boxes = new Dictionary<Box,BoxObject>();
+    public event Action<Box> OnCycle;
+    [SerializeField]
+    Vector3 startPos,endPos;
+    #region getters
+    public Vector3 GetStart()
     {
-        
+        return startPos+transform.position;
     }
-
-    // Update is called once per frame
-    void Update()
+    public Vector3 GetEnd()
     {
-        
+        return endPos+transform.position;
+    }
+    #endregion
+    #region methods
+    public void AddProductToLine(BoxObject _bo)// add a box to the conveyor belt
+    {
+        boxes.Add(_bo.GetBox(),_bo);
+    }
+    public void RemoveFromProductLine(Box _b)//remove a box from the conveyor belt
+    {
+       Destroy(boxes[_b].gameObject);
+       boxes.Remove(_b);
+    }
+    #endregion
+    private void FixedUpdate()
+    {
+        MoveLine();
+        CheckEnd();
+    }
+    void MoveLine()//move the boxes
+    {
+        foreach (KeyValuePair<Box, BoxObject> bo in boxes)//move all the boxes towards the end of the conveyor belt
+        {
+            bo.Value.transform.position = Vector3.MoveTowards(bo.Value.transform.position, endPos + transform.position, rollSpeed * Time.deltaTime);
+
+           
+        }
+    }
+    void CheckEnd()//check if a box is at the end
+    {
+        foreach (KeyValuePair<Box, BoxObject> bo in boxes)//move all the boxes towards the end of the conveyor belt
+        {
+            if (Vector3.Distance(bo.Value.transform.position, endPos + transform.position) < 0.1f)//if any box reaches the end
+            {
+                print("end reached");
+                OnCycle?.Invoke(bo.Key);//call the delegate that deletes the box from the managers list
+                RemoveFromProductLine(bo.Key);//remove the box from the line
+                return;
+            }
+        }
+    }
+    private void OnDrawGizmos()//used for visualizing start and end positions
+    {
+
+        Gizmos.DrawWireCube(transform.position+startPos, Vector3.one/2);
+        Gizmos.DrawWireCube(transform.position+endPos, Vector3.one/2);
+
     }
 }

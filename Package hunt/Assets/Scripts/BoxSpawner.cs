@@ -4,13 +4,21 @@ using UnityEngine;
 
 public class BoxSpawner : MonoBehaviour
 {
-    BoxRoller br;
-    private void Start()
+    
+    
+    [SerializeField]
+    GameObject boxPrefab;
+    
+    public BoxObject SpawnBox(Box _b,BoxRoller _br)
     {
-        br = GetComponent<BoxRoller>();
+        GameObject g = Instantiate(boxPrefab, _br.GetStart(), Quaternion.identity);
+        BoxObject bo = g.AddComponent<BoxObject>();
+        bo.SetBox(_b);
+        _br.AddProductToLine(bo);
+        return bo;
     }
-    void SpawnBox()
+    public void DespawnBox(Box _b,BoxRoller _br)
     {
-
+        _br.RemoveFromProductLine(_b);
     }
 }
