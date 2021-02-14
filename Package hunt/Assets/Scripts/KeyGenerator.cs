@@ -10,15 +10,14 @@ public class KeyGenerator
         char empty = ' ';
         string emptyFill = new string(empty, format.Length);
         char[] code = emptyFill.ToCharArray();
-        int r = 2;
         
         for(int i = 0; i < code.Length; i++)
         {
-            if (char.IsLetter(format[i]))
+            if (char.IsLetter(format[i]))//if the checked part of the format is a letter
             {
-                code[i] = (char)('A' + Random.Range(0, 26));
+                code[i] = (char)('A' + Random.Range(0, 26));//choose random letter from capital A to Capital Z aka A to A+25
             }
-            else
+            else// if the checked part of the format is a number
             {
                 code[i] = Mathf.FloorToInt(Random.Range(0, 10)).ToString()[0];
             }
