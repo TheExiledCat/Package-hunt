@@ -23,7 +23,7 @@ public class KeyGenerator
             }
         }
         string key = new string(code);
-        Debug.Log(key);
+        //Debug.Log(key);
 
         return key;
         

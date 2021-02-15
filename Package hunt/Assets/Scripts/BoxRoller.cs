@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class BoxRoller : MonoBehaviour
 {
-    float rollSpeed=1;
+    [SerializeField]
+    float rollSpeed;
+    float currentRollSpeed;
     Dictionary<Box,BoxObject> boxes = new Dictionary<Box,BoxObject>();
     public event Action<Box> OnCycle;
     [SerializeField]
@@ -29,19 +31,13 @@ public class BoxRoller : MonoBehaviour
        Destroy(boxes[_b].gameObject);
        boxes.Remove(_b);
     }
-    #endregion
-    private void FixedUpdate()
-    {
-        MoveLine();
-        CheckEnd();
-    }
     void MoveLine()//move the boxes
     {
         foreach (KeyValuePair<Box, BoxObject> bo in boxes)//move all the boxes towards the end of the conveyor belt
         {
             bo.Value.transform.position = Vector3.MoveTowards(bo.Value.transform.position, endPos + transform.position, rollSpeed * Time.deltaTime);
 
-           
+
         }
     }
     void CheckEnd()//check if a box is at the end
@@ -57,7 +53,22 @@ public class BoxRoller : MonoBehaviour
             }
         }
     }
-    private void OnDrawGizmos()//used for visualizing start and end positions
+    public void SpeedUp(float multiplier)//speed up the line
+    {
+        currentRollSpeed += (rollSpeed * multiplier) - rollSpeed;// grabs the initial multiplier value and ads it to the current one
+    }
+    #endregion
+    private void Start()
+    {
+        currentRollSpeed = rollSpeed;
+    }
+    private void FixedUpdate()
+    {
+        MoveLine();
+        CheckEnd();
+    }
+    
+    private void OnDrawGizmos()//used for visualizing start and end positions, debugging
     {
 
         Gizmos.DrawWireCube(transform.position+startPos, Vector3.one/2);

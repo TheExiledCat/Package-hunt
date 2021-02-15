@@ -12,7 +12,7 @@ public class BoxSpawner : MonoBehaviour
     public BoxObject SpawnBox(Box _b,BoxRoller _br)
     {
         GameObject g = Instantiate(boxPrefab, _br.GetStart(), Quaternion.identity);
-        BoxObject bo = g.AddComponent<BoxObject>();
+        BoxObject bo = g.GetComponent<BoxObject>();
         bo.SetBox(_b);
         _br.AddProductToLine(bo);
         return bo;

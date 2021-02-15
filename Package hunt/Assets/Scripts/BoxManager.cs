@@ -10,13 +10,15 @@ public class BoxManager : MonoBehaviour
     [SerializeField]
     List<Box> preGeneratedBoxes = new List<Box>(); //pregenerated box values so theres always gonna be multiple options
     Dictionary<string, Box> spawnedBoxes = new Dictionary<string, Box>(); //dictionary which holds the boxes and subsiquently makes the boxes findable by id
-    public event Action<string> OnNewBox;
+    public event Action<List<Box>> OnSelection;
+    Box selectedBox;
     [SerializeField]
-    int boxesPerSelection;//how many boxes before a new one is selected
+    int boxesPerSelection;//how many boxes before a new one is selected, also amount before line speeds up
     [SerializeField]
     float timer; // time between spawns;
     float currentTimer;
-
+    //[SerializeField]
+    //float speedMultiplier; //speeds up the spawn and speed rate
     int cycles; //total spawns so far, will change the speed of the line
     float startTimer;
     private void Start()
@@ -25,17 +27,28 @@ public class BoxManager : MonoBehaviour
         roller = GetComponent<BoxRoller>();//get the virtual  conveyor belt
         currentTimer = Time.time;//get start time for spawning;
         startTimer = timer;
-        roller.OnCycle += RemoveBox;
+        roller.OnCycle += RemoveBox;//sub to the delegate
         InitializeProductLine();
+        Select();
     }
     private void FixedUpdate()
     {
-        if(Time.time-currentTimer == timer)
+        if(Time.time-currentTimer >= timer)
         {
             print("Spawn");
             PushProductionLine();
+            if (cycles % boxesPerSelection==0&&selectedBox==null)//every x amount of cycles , where x is boxes per selection
+            {
+                Select();
+            }
         }
     }
+    #region methods
+    void Select()
+    {
+
+        OnSelection?.Invoke(preGeneratedBoxes);//call delegate to select a new box for extraction
+    } 
     void PushProductionLine()//spawns the first box in the list and push a new one at the end
     {
         BoxObject bo =spawner.SpawnBox(preGeneratedBoxes[0],roller);
@@ -43,6 +56,10 @@ public class BoxManager : MonoBehaviour
         preGeneratedBoxes.RemoveAt(0);
         InsertNewBox();
         RefreshTimer();
+    }
+    public void RemoveSelection(Box _b)
+    {
+        spawner.DespawnBox(_b, roller);
     }
     void InitializeProductLine()//fills the list with boxes for initialization
     {
@@ -55,7 +72,6 @@ public class BoxManager : MonoBehaviour
     {
         Box b = InitializeBox();
         preGeneratedBoxes.Add(b);
-        
     }
     void RemoveBox(Box _b)
     {
@@ -71,6 +87,10 @@ public class BoxManager : MonoBehaviour
         Box b = new Box(kg.GenerateKey("XXX###"));
         return b;
     }//creates a box
-
+    #endregion
+    public void SetSelected(Box _b)
+    {
+        selectedBox = _b;
+    }
 
 }
