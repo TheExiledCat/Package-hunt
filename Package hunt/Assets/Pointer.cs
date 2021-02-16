@@ -8,17 +8,33 @@ public class Pointer : MonoBehaviour
     [SerializeField]
     LayerMask boxes;
     public event Action<Box> OnClick;
+    void ScanBox()
+    {
+        Box b = hit.collider.GetComponent<BoxObject>()?.GetBox();
+        if (b != null)
+        {
+            OnClick?.Invoke(b);//call the delegate on click
+            print(b.GetTrackingCode());
+        }
+        else
+        {
+            print("huh");
+        }
 
-    // Update is called once per frame
+    }
     void FixedUpdate()
     {
+
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, boxes)){
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButton(0))
             {
-                Box b = hit.collider.GetComponent<BoxObject>()?.GetBox();
-                OnClick?.Invoke(b);//call the delegate on click
-                print(b.GetTrackingCode());
+                
+                ScanBox();
             }
         }
+    }
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(Camera.main.ScreenPointToRay(Input.mousePosition));
     }
 }

@@ -11,6 +11,7 @@ public class BoxManager : MonoBehaviour
     List<Box> preGeneratedBoxes = new List<Box>(); //pregenerated box values so theres always gonna be multiple options
     Dictionary<string, Box> spawnedBoxes = new Dictionary<string, Box>(); //dictionary which holds the boxes and subsiquently makes the boxes findable by id
     public event Action<List<Box>> OnSelection;
+    public event Action<Box> OnRemove;
     Box selectedBox;
     [SerializeField]
     int boxesPerSelection;//how many boxes before a new one is selected, also amount before line speeds up
@@ -43,8 +44,13 @@ public class BoxManager : MonoBehaviour
             }
         }
     }
+    public void Miss(Box _b)//protocol when a box is missed;
+    {
+        spawnedBoxes.Remove(_b.GetTrackingCode());
+        Select();
+    }
     #region methods
-    void Select()
+    public void Select()
     {
 
         OnSelection?.Invoke(preGeneratedBoxes);//call delegate to select a new box for extraction
@@ -57,7 +63,7 @@ public class BoxManager : MonoBehaviour
         InsertNewBox();
         RefreshTimer();
     }
-    public void RemoveSelection(Box _b)
+    public void RemoveSelection(Box _b)//tell the spawner to despawn the box
     {
         spawner.DespawnBox(_b, roller);
     }
@@ -75,6 +81,7 @@ public class BoxManager : MonoBehaviour
     }
     void RemoveBox(Box _b)
     {
+        OnRemove?.Invoke(_b);
         spawnedBoxes.Remove(_b.GetTrackingCode());
     }
     void RefreshTimer()//refreshes the spawn timer

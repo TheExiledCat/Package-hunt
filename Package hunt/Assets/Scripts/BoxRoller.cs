@@ -53,7 +53,7 @@ public class BoxRoller : MonoBehaviour
             }
         }
     }
-    public void SpeedUp(float multiplier)//speed up the line
+    public void SpeedUp(float multiplier)//speed up the line, not implemented
     {
         currentRollSpeed += (rollSpeed * multiplier) - rollSpeed;// grabs the initial multiplier value and ads it to the current one
     }
